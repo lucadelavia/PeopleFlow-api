@@ -1,0 +1,38 @@
+tags:
+  - Empleados
+summary: Crear un nuevo empleado
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - nombre
+        - apellido
+        - email
+        - salario
+      properties:
+        nombre:
+          type: string
+          maxLength: 50
+        apellido:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+        puesto:
+          type: string
+          maxLength: 100
+        salario:
+          type: number
+          minimum: 0.01
+        fecha_ingreso:
+          type: string
+responses:
+  201:
+    description: Empleado creado exitosamente
+  400:
+    description: Datos invalidos
+  409:
+    description: Email ya existe

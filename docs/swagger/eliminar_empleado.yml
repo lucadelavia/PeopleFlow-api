@@ -1,0 +1,13 @@
+tags:
+  - Empleados
+summary: Eliminar empleado
+parameters:
+  - name: empleado_id
+    in: path
+    type: string
+    required: true
+responses:
+  200:
+    description: Empleado eliminado
+  404:
+    description: Empleado no encontrado

@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from datetime import datetime
+from flasgger import swag_from
 from app.services.employees_service import EmployeesService
 from app.common.errors import EmpleadoNoEncontrado, EmailYaExiste, DatosInvalidos, ErrorBaseDatos
 
@@ -8,13 +9,8 @@ service = EmployeesService()
 
 
 @employees_bp.route('', methods=['POST'])
+@swag_from({'tags': ['Empleados'], 'summary': 'Crear empleado'})
 def crear_empleado():
-    """
-    Crear un nuevo empleado
-    Campos requeridos: nombre, apellido, email, salario
-    Campos opcionales: fecha_ingreso (formato dd/mm/yyyy), puesto
-    Ejemplo: POST /api/empleados
-    """
     try:
         datos = request.json
         if not datos:
@@ -44,11 +40,8 @@ def crear_empleado():
 
 
 @employees_bp.route('', methods=['GET'])
+@swag_from({'tags': ['Empleados'], 'summary': 'Listar empleados'})
 def listar_empleados():
-    """
-    Listar empleados con paginación y filtros
-    Ejemplo: GET /api/empleados?nombre=Juan&email=juan@ejemplo.com&puesto=CFO&page=1&per_page=10
-    """
     try:
         try:
             pagina = int(request.args.get('page', request.args.get('pagina', 1)))
@@ -84,11 +77,8 @@ def listar_empleados():
 
 
 @employees_bp.route('/<string:empleado_id>', methods=['GET'])
+@swag_from({'tags': ['Empleados'], 'summary': 'Obtener empleado por ID'})
 def obtener_empleado(empleado_id):
-    """
-    Obtener un empleado por ID
-    Ejemplo: GET /api/empleados/507f1f77bcf86cd799439011
-    """
     try:
         empleado = service.obtener_empleado(empleado_id)
         return jsonify(empleado.to_dict()), 200
@@ -105,11 +95,8 @@ def obtener_empleado(empleado_id):
 
 
 @employees_bp.route('/<string:empleado_id>', methods=['PUT'])
+@swag_from({'tags': ['Empleados'], 'summary': 'Actualizar empleado'})
 def actualizar_empleado(empleado_id):
-    """
-    Actualizar un empleado existente
-    Ejemplo: PUT /api/empleados/507f1f77bcf86cd799439011
-    """
     try:
         datos = request.json
         if not datos:
@@ -144,11 +131,8 @@ def actualizar_empleado(empleado_id):
 
 
 @employees_bp.route('/<string:empleado_id>', methods=['DELETE'])
+@swag_from({'tags': ['Empleados'], 'summary': 'Eliminar empleado'})
 def eliminar_empleado(empleado_id):
-    """
-    Eliminar un empleado
-    Ejemplo: DELETE /api/empleados/507f1f77bcf86cd799439011
-    """
     try:
         empleado_eliminado = service.eliminar_empleado(empleado_id)
         
@@ -169,11 +153,8 @@ def eliminar_empleado(empleado_id):
 
 
 @employees_bp.route('/estadisticas', methods=['GET'])
+@swag_from({'tags': ['Reportes'], 'summary': 'Estadisticas de empleados'})
 def obtener_estadisticas():
-    """
-    Obtener estadísticas generales de empleados
-    Ejemplo: GET /api/empleados/estadisticas
-    """
     try:
         estadisticas = service.obtener_estadisticas()
         return jsonify(estadisticas), 200
@@ -185,11 +166,8 @@ def obtener_estadisticas():
 
 
 @employees_bp.route('/promedio-empresa', methods=['GET'])
+@swag_from({'tags': ['Reportes'], 'summary': 'Promedio de salarios'})
 def promedio_salarios_empresa():
-    """
-    Calcular promedio de salarios de TODA LA EMPRESA
-    Ejemplo: GET /api/empleados/promedio-empresa
-    """
     try:
         promedio = service.calcular_promedio_salarios_empresa()
         

@@ -1,0 +1,17 @@
+tags:
+  - Reportes
+summary: Promedio de salarios de la empresa
+responses:
+  200:
+    description: Promedio calculado
+    schema:
+      type: object
+      properties:
+        promedio_salarios:
+          type: number
+        descripcion:
+          type: string
+        moneda:
+          type: string
+        fecha_calculo:
+          type: string
