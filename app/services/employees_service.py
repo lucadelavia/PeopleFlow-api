@@ -49,8 +49,7 @@ class EmployeesService:
         return self.repo.actualizar(empleado_id, datos_request)
     
     def eliminar_empleado(self, empleado_id):
-        resultado = self.repo.eliminar(empleado_id)
-        return {"eliminado": bool(resultado)}
+        return self.repo.eliminar(empleado_id)
     
     def obtener_estadisticas(self):
         total_empleados = self.repo.contar()
@@ -59,6 +58,7 @@ class EmployeesService:
         return {
             'total_empleados': total_empleados,
             'promedio_salarios': promedio_salarios,
+            'moneda': 'ARS',
             'fecha_reporte': datetime.now().strftime('%d/%m/%Y %H:%M')
         }
     
