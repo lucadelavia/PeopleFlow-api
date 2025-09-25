@@ -1,6 +1,7 @@
 from app.repository.employees_repository import EmployeesRepository
 from app.models.employee import Employee
 from app.common.errors import DatosInvalidos, EmpleadoNoEncontrado, ErrorBaseDatos
+from app.config import Config
 from datetime import datetime
 
 

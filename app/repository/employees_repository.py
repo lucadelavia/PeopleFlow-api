@@ -2,14 +2,14 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from pymongo.errors import DuplicateKeyError
 from app.models.employee import Employee
-from app.extensions import mongo
+from app.db import get_database
 from app.common.errors import EmpleadoNoEncontrado, EmailYaExiste, ErrorBaseDatos
 
 
 class EmployeesRepository:
     
     def __init__(self):
-        self.coleccion = mongo.db.employees
+        self.coleccion = get_database().empleados
     
     def crear(self, empleado):
         if not empleado or not empleado.email:
