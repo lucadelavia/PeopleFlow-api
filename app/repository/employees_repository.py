@@ -40,16 +40,21 @@ class EmployeesRepository:
     def obtener_todos(self, filtros=None, pagina=1, por_pagina=10):
         query = {}
         
-        if filtros and 'puesto' in filtros:
-            query['puesto'] = filtros['puesto']
+        if filtros:
+            for campo, valor in filtros.items():
+                if valor:
+                    query[campo] = valor
         
         pagina = max(1, pagina)
         por_pagina = max(1, min(100, por_pagina))
         
         skip = (pagina - 1) * por_pagina
-        cursor = self.coleccion.find(query).skip(skip).limit(por_pagina)
         
-        return [Employee.from_dict(doc) for doc in cursor]
+        try:
+            cursor = self.coleccion.find(query).skip(skip).limit(por_pagina)
+            return [Employee.from_dict(doc) for doc in cursor]
+        except Exception as e:
+            raise ErrorBaseDatos(f"Error al obtener empleados: {str(e)}")
     
     def actualizar(self, empleado_id, datos_actualizacion):
         try:
@@ -85,10 +90,15 @@ class EmployeesRepository:
     def contar(self, filtros=None):
         query = {}
         
-        if filtros and 'puesto' in filtros:
-            query['puesto'] = filtros['puesto']
+        if filtros:
+            for campo, valor in filtros.items():
+                if valor:
+                    query[campo] = valor
         
-        return self.coleccion.count_documents(query)
+        try:
+            return self.coleccion.count_documents(query)
+        except Exception as e:
+            raise ErrorBaseDatos(f"Error al contar empleados: {str(e)}")
     
     def obtener_promedio_salarios_empresa(self):
         try:

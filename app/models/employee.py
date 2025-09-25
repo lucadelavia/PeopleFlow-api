@@ -1,15 +1,16 @@
 from datetime import datetime
 from bson import ObjectId
 import re
+from app.common.errors import DatosInvalidos
 
 
 class Employee:
-    def __init__(self, nombre, apellido, email, puesto, salario, fecha_ingreso=None, _id=None):
+    def __init__(self, nombre, apellido, email, salario, fecha_ingreso=None, puesto=None, _id=None):
         self._id = _id
         self.nombre = nombre
         self.apellido = apellido
         self.email = email
-        self.puesto = puesto
+        self.puesto = puesto or "Empleado" 
         self.salario = salario
         self.fecha_ingreso = fecha_ingreso or datetime.now()
     
@@ -44,7 +45,7 @@ class Employee:
             try:
                 fecha_ingreso = datetime.strptime(fecha_ingreso, '%d/%m/%Y')
             except ValueError:
-                fecha_ingreso = datetime.now()
+                raise ValueError("Formato de fecha invalido. Use dd/mm/yyyy")
         
         return cls(
             _id=datos.get('_id'),
@@ -56,46 +57,59 @@ class Employee:
             fecha_ingreso=fecha_ingreso
         )
     
-    def validate(self):
-        errores = []
+
+    @staticmethod
+    def validar_campos(datos, validacion_completa=False):
+        if validacion_completa:
+            if 'nombre' not in datos: raise DatosInvalidos("El nombre es obligatorio")
+            if 'apellido' not in datos: raise DatosInvalidos("El apellido es obligatorio")
+            if 'email' not in datos: raise DatosInvalidos("El email es obligatorio")
+            if 'salario' not in datos: raise DatosInvalidos("El salario es obligatorio")
         
-        if not self.nombre or not self.nombre.strip():
-            errores.append("Nombre es requerido")
-        elif len(self.nombre.strip()) > 50:
-            errores.append("Nombre no puede tener más de 50 caracteres")
-        
-        if not self.apellido or not self.apellido.strip():
-            errores.append("Apellido es requerido")
-        elif len(self.apellido.strip()) > 50:
-            errores.append("Apellido no puede tener más de 50 caracteres")
-        
-        if not self.email or not self.email.strip():
-            errores.append("Email es requerido")
-        else:
-            patron_email = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-            if not re.match(patron_email, self.email.strip()):
-                errores.append("Email no tiene un formato valido")
-        
-        if not self.puesto or not self.puesto.strip():
-            errores.append("Puesto es requerido")
-        elif len(self.puesto.strip()) > 100:
-            errores.append("Puesto no puede tener mas de 100 caracteres")
-        
-        if self.salario is None:
-            errores.append("Salario es requerido")
-        elif not isinstance(self.salario, (int, float)):
-            errores.append("Salario debe ser un número")
-        elif self.salario <= 0:
-            errores.append("Salario debe ser mayor a 0")
-        
-        if self.fecha_ingreso and isinstance(self.fecha_ingreso, datetime):
-            if self.fecha_ingreso.date() > datetime.now().date():
-                errores.append("Fecha de ingreso no puede ser futura")
-        
-        return errores
+        if 'nombre' in datos:
+            Employee.validar_nombre(datos['nombre'])
+        if 'apellido' in datos:
+            Employee.validar_apellido(datos['apellido'])
+        if 'email' in datos:
+            Employee.validar_email(datos['email'])
+        if 'puesto' in datos:
+            Employee.validar_puesto(datos['puesto'])
+        if 'salario' in datos:
+            Employee.validar_salario(datos['salario'])
+        if 'fecha_ingreso' in datos:
+            Employee.validar_fecha(datos['fecha_ingreso'])
     
-    def validar_email_unico(self, emails_existentes, excluir_id=None):
-        if self.email and self.email.lower().strip() in [email.lower() for email in emails_existentes]:
-            if excluir_id is None or self._id != excluir_id:
-                return ["El email ya esta registrado"]
-        return []
+    @staticmethod
+    def validar_nombre(nombre):
+        if not nombre or not nombre.strip(): raise DatosInvalidos("El nombre no puede estar vacio")
+        if len(nombre.strip()) > 50: raise DatosInvalidos("El nombre no puede superar los 50 caracteres")
+    
+    @staticmethod
+    def validar_apellido(apellido):
+        if not apellido or not apellido.strip(): raise DatosInvalidos("El apellido no puede estar vacio")
+        if len(apellido.strip()) > 50: raise DatosInvalidos("El apellido no puede superar los 50 caracteres")
+    
+    @staticmethod
+    def validar_email(email):
+        if not email or not email.strip(): raise DatosInvalidos("El email no puede estar vacio")
+        if '@' not in email or '.' not in email: raise DatosInvalidos("El formato del email no es valido")
+    
+    @staticmethod
+    def validar_puesto(puesto):
+        if puesto and len(puesto.strip()) > 100: raise DatosInvalidos("El puesto no puede superar los 100 caracteres")
+    
+    @staticmethod
+    def validar_salario(salario):
+        if salario is None or salario == '': raise DatosInvalidos("El salario no puede estar vacio")
+        try:
+            if float(salario) <= 0: raise DatosInvalidos("El salario debe ser mayor a cero")
+        except: raise DatosInvalidos("El salario debe ser un numero valido")
+    
+    @staticmethod
+    def validar_fecha(fecha):
+        if fecha:
+            try:
+                fecha_obj = datetime.strptime(fecha, '%d/%m/%Y')
+                if fecha_obj.date() > datetime.now().date(): raise DatosInvalidos("La fecha de ingreso no puede ser futura")
+            except: raise DatosInvalidos("La fecha debe tener formato dd/mm/yyyy")
+    

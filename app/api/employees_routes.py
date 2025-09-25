@@ -11,6 +11,8 @@ service = EmployeesService()
 def crear_empleado():
     """
     Crear un nuevo empleado
+    Campos requeridos: nombre, apellido, email, salario
+    Campos opcionales: fecha_ingreso (formato dd/mm/yyyy), puesto
     Ejemplo: POST /api/empleados
     """
     try:
@@ -44,29 +46,36 @@ def crear_empleado():
 @employees_bp.route('', methods=['GET'])
 def listar_empleados():
     """
-    Listar empleados con paginación y filtro por puesto
-    Ejemplo: GET /api/empleados?puesto=CFO&pagina=1&por_pagina=10
+    Listar empleados con paginación y filtros
+    Ejemplo: GET /api/empleados?nombre=Juan&email=juan@ejemplo.com&puesto=CFO&page=1&per_page=10
     """
     try:
         try:
-            pagina = int(request.args.get('pagina', 1))
-            por_pagina = int(request.args.get('por_pagina', 10))
+            pagina = int(request.args.get('page', request.args.get('pagina', 1)))
+            por_pagina = int(request.args.get('per_page', request.args.get('por_pagina', 10)))
         except ValueError:
             return jsonify({'error': 'Parámetros de paginación inválidos'}), 400
             
+        nombre = request.args.get('nombre')
+        apellido = request.args.get('apellido') 
+        email = request.args.get('email')
         puesto = request.args.get('puesto')
-        
-        filtros = {}
-        if puesto:
-            filtros['puesto'] = puesto
             
         resultado = service.listar_empleados(
             pagina=pagina,
             por_pagina=por_pagina,
-            filtros=filtros
+            nombre=nombre,
+            apellido=apellido,
+            email=email,
+            puesto=puesto
         )
         
         return jsonify(resultado), 200
+        
+    except DatosInvalidos as e:
+        return jsonify({
+            'error': str(e)
+        }), 400
         
     except Exception as e:
         return jsonify({

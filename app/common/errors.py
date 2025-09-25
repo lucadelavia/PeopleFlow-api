@@ -36,3 +36,13 @@ class ErrorConexion(EmployeeError):
     def __init__(self):
         mensaje = "Error de conexión con la base de datos"
         super().__init__(mensaje, 503)
+
+
+class CamposRequeridos(EmployeeError):
+    def __init__(self, campos_faltantes):
+        if isinstance(campos_faltantes, list):
+            campos = ", ".join(campos_faltantes)
+        else:
+            campos = str(campos_faltantes)
+        mensaje = f"Campos requeridos faltantes: {campos}"
+        super().__init__(mensaje, 400)

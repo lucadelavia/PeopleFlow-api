@@ -1,6 +1,6 @@
 from app.repository.employees_repository import EmployeesRepository
 from app.models.employee import Employee
-from app.common.errors import DatosInvalidos, EmpleadoNoEncontrado
+from app.common.errors import DatosInvalidos, EmpleadoNoEncontrado, ErrorBaseDatos
 from datetime import datetime
 
 
@@ -10,11 +10,11 @@ class EmployeesService:
         self.repo = EmployeesRepository()
     
     def crear_empleado(self, datos_request):
-        empleado = Employee.from_dict(datos_request)
-        
-        errores_modelo = empleado.validate()
-        if errores_modelo:
-            raise DatosInvalidos(errores_modelo)
+        try:
+            Employee.validar_campos(datos_request, validacion_completa=True)
+            empleado = Employee.from_dict(datos_request)
+        except ValueError as e:
+            raise DatosInvalidos(str(e))
         
         return self.repo.crear(empleado)
     
@@ -24,9 +24,24 @@ class EmployeesService:
             raise EmpleadoNoEncontrado(empleado_id)
         return empleado
     
-    def listar_empleados(self, filtros=None, pagina=1, por_pagina=10):
-        pagina = max(int(pagina), 1)
-        por_pagina = max(min(int(por_pagina), 100), 1)
+    def listar_empleados(self, filtros=None, pagina=1, por_pagina=10, **kwargs):
+        try:
+            pagina = max(int(pagina), 1)
+            por_pagina = max(min(int(por_pagina), 100), 1)
+        except (ValueError, TypeError):
+            raise DatosInvalidos("Parámetros de paginación inválidos")
+        
+        if not filtros:
+            filtros = {}
+            
+        if 'nombre' in kwargs and kwargs['nombre']:
+            filtros['nombre'] = {'$regex': kwargs['nombre'], '$options': 'i'}
+        if 'apellido' in kwargs and kwargs['apellido']:
+            filtros['apellido'] = {'$regex': kwargs['apellido'], '$options': 'i'}
+        if 'email' in kwargs and kwargs['email']:
+            filtros['email'] = kwargs['email'].lower()
+        if 'puesto' in kwargs and kwargs['puesto']:
+            filtros['puesto'] = {'$regex': kwargs['puesto'], '$options': 'i'}
         
         empleados = self.repo.obtener_todos(filtros, pagina, por_pagina)
         total = self.repo.contar(filtros)
@@ -40,11 +55,16 @@ class EmployeesService:
         }
     
     def actualizar_empleado(self, empleado_id, datos_request):
+        Employee.validar_campos(datos_request)  
+        
         if 'fecha_ingreso' in datos_request and isinstance(datos_request['fecha_ingreso'], str):
             try:
                 datos_request['fecha_ingreso'] = datetime.strptime(datos_request['fecha_ingreso'], '%d/%m/%Y')
             except ValueError:
-                raise DatosInvalidos("Formato de fecha invalido. Use dd/mm/yyyy")
+                raise DatosInvalidos("Formato de fecha inválido. Use dd/mm/yyyy")
+        
+        if 'salario' in datos_request:
+            datos_request['salario'] = float(datos_request['salario'])
         
         return self.repo.actualizar(empleado_id, datos_request)
     
