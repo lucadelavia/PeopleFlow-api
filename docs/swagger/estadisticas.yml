@@ -1,0 +1,17 @@
+tags:
+  - Reportes
+summary: Estadisticas generales de empleados
+responses:
+  200:
+    description: Estadisticas calculadas
+    schema:
+      type: object
+      properties:
+        total_empleados:
+          type: integer
+        promedio_salario:
+          type: number
+        salario_maximo:
+          type: number
+        salario_minimo:
+          type: number

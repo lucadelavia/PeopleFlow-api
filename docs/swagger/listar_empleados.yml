@@ -1,0 +1,30 @@
+tags:
+  - Empleados
+summary: Listar empleados con filtros
+parameters:
+  - name: pagina
+    in: query
+    type: integer
+    default: 1
+  - name: por_pagina
+    in: query
+    type: integer
+    default: 10
+  - name: nombre
+    in: query
+    type: string
+  - name: apellido
+    in: query
+    type: string
+  - name: puesto
+    in: query
+    type: string
+  - name: salario_min
+    in: query
+    type: number
+  - name: salario_max
+    in: query
+    type: number
+responses:
+  200:
+    description: Lista de empleados

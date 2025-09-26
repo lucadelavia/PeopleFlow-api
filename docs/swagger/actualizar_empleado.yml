@@ -1,0 +1,33 @@
+tags:
+  - Empleados
+summary: Actualizar empleado
+parameters:
+  - name: empleado_id
+    in: path
+    type: string
+    required: true
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        nombre:
+          type: string
+        apellido:
+          type: string
+        email:
+          type: string
+        puesto:
+          type: string
+        salario:
+          type: number
+        fecha_ingreso:
+          type: string
+responses:
+  200:
+    description: Empleado actualizado
+  404:
+    description: Empleado no encontrado
+  409:
+    description: Email ya existe
