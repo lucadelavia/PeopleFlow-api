@@ -2,6 +2,7 @@ from flask import Flask
 from flasgger import Swagger
 from app.config import Config
 from app.extensions import mongo
+import os
 
 
 def create_app():
@@ -23,6 +24,9 @@ def create_app():
         "specs_route": "/"
     }
     
+    # Siempre usar localhost:5000 para que sea accesible desde el navegador
+    host = "localhost:5000"
+    
     swagger_template = {
         "swagger": "2.0",
         "info": {
@@ -30,7 +34,7 @@ def create_app():
             "description": "Prueba tecnica realizada con Python, Flask y MongoDB",
             "version": "1.0.0"
         },
-        "host": "localhost:5000",
+        "host": host,
         "basePath": "/",
         "schemes": ["http"],
         "consumes": ["application/json"],

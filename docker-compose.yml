@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: peopleflow_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - peopleflow_network
+  api-dev:
+    build: .
+    container_name: peopleflow_api_dev
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/peopleflow
+      - SECRET_KEY=leafnoiseprueba2025
+      - DEBUG=True
+      - TESTING=False
+      - API_VERSION=v1
+      - DEFAULT_PAGE_SIZE=10
+      - MAX_PAGE_SIZE=100
+      - FLASK_ENV=development
+      - DOCKER_CONTAINER=true
+    depends_on:
+      - mongodb
+    networks:
+      - peopleflow_network
+    volumes:
+      - .:/app
+
+volumes:
+  mongodb_data:
+
+networks:
+  peopleflow_network:
+    driver: bridge
