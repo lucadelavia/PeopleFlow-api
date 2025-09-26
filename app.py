@@ -8,7 +8,7 @@ app = create_app()
 if __name__ == '__main__':
     debug_mode = os.getenv('DEBUG', 'True').lower() == 'true'
     port = int(os.getenv('PORT', 5000))
-    host = os.getenv('HOST', '127.0.0.1')
+    host = os.getenv('HOST', '0.0.0.0')
     
     print("PeopleFlow API")
     print(f"URL: http://{host}:{port}")
