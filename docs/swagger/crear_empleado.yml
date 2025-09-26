@@ -16,19 +16,25 @@ parameters:
         nombre:
           type: string
           maxLength: 50
+          example: "Juan"
         apellido:
           type: string
           maxLength: 50
+          example: "Perez"
         email:
           type: string
+          example: "juan.perez@empresa.com"
         puesto:
           type: string
           maxLength: 100
+          example: "Desarrollador"
         salario:
           type: number
           minimum: 0.01
+          example: 85000
         fecha_ingreso:
           type: string
+          example: "15/01/2024"
 responses:
   201:
     description: Empleado creado exitosamente

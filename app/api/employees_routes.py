@@ -9,7 +9,7 @@ service = EmployeesService()
 
 
 @employees_bp.route('', methods=['POST'])
-@swag_from({'tags': ['Empleados'], 'summary': 'Crear empleado'})
+@swag_from('../../docs/swagger/crear_empleado.yml')
 def crear_empleado():
     try:
         datos = request.json
@@ -40,7 +40,7 @@ def crear_empleado():
 
 
 @employees_bp.route('', methods=['GET'])
-@swag_from({'tags': ['Empleados'], 'summary': 'Listar empleados'})
+@swag_from('../../docs/swagger/listar_empleados.yml')
 def listar_empleados():
     try:
         try:
@@ -77,7 +77,7 @@ def listar_empleados():
 
 
 @employees_bp.route('/<string:empleado_id>', methods=['GET'])
-@swag_from({'tags': ['Empleados'], 'summary': 'Obtener empleado por ID'})
+@swag_from('../../docs/swagger/obtener_empleado.yml')
 def obtener_empleado(empleado_id):
     try:
         empleado = service.obtener_empleado(empleado_id)
@@ -95,7 +95,7 @@ def obtener_empleado(empleado_id):
 
 
 @employees_bp.route('/<string:empleado_id>', methods=['PUT'])
-@swag_from({'tags': ['Empleados'], 'summary': 'Actualizar empleado'})
+@swag_from('../../docs/swagger/actualizar_empleado.yml')
 def actualizar_empleado(empleado_id):
     try:
         datos = request.json
@@ -131,7 +131,7 @@ def actualizar_empleado(empleado_id):
 
 
 @employees_bp.route('/<string:empleado_id>', methods=['DELETE'])
-@swag_from({'tags': ['Empleados'], 'summary': 'Eliminar empleado'})
+@swag_from('../../docs/swagger/eliminar_empleado.yml')
 def eliminar_empleado(empleado_id):
     try:
         empleado_eliminado = service.eliminar_empleado(empleado_id)
@@ -153,7 +153,7 @@ def eliminar_empleado(empleado_id):
 
 
 @employees_bp.route('/estadisticas', methods=['GET'])
-@swag_from({'tags': ['Reportes'], 'summary': 'Estadisticas de empleados'})
+@swag_from('../../docs/swagger/estadisticas.yml')
 def obtener_estadisticas():
     try:
         estadisticas = service.obtener_estadisticas()
@@ -166,7 +166,7 @@ def obtener_estadisticas():
 
 
 @employees_bp.route('/promedio-empresa', methods=['GET'])
-@swag_from({'tags': ['Reportes'], 'summary': 'Promedio de salarios'})
+@swag_from('../../docs/swagger/promedio_salarios.yml')
 def promedio_salarios_empresa():
     try:
         promedio = service.calcular_promedio_salarios_empresa()
