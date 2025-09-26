@@ -34,7 +34,7 @@ parameters:
           example: 85000
         fecha_ingreso:
           type: string
-          example: "15/01/2024"
+          example: "15/01/2025"
 responses:
   201:
     description: Empleado creado exitosamente

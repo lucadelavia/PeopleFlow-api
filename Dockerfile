@@ -4,7 +4,6 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
 
-# Crear archivo para detectar Docker
 RUN touch /.dockerenv
 
 COPY requirements.txt .
